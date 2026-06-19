@@ -7,6 +7,8 @@ app.use(cors());
 app.use(express.json());
 
 app.post("/api/requirements", (req, res) => {
+  console.log(req.body);
+
   return res.json({
     message: "Requirement received",
   });

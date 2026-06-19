@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { submitRequirement } from './services/api';
 
 interface RequirementResponse {
   summary: string;
@@ -19,7 +20,7 @@ function App() {
     setResponse(null);
     setError(null);
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await submitRequirement(requirement);
 
     setResponse({summary: "Require manager approval for purchases over $5000", status: "Ready for processing"});
   } catch {
