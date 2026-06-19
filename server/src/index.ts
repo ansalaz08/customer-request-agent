@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import { isValidTransaction, normalizeTransaction } from "./utils/normalizeTransaction";
 
 const app = express();
 
@@ -15,8 +16,6 @@ app.post("/api/requirements", (req, res) => {
 });
 
 app.post("/api/transactions", (req, res) => {
-  console.log("BODY", req.body);
-
   const { transactions } = req.body;
 
   if (!Array.isArray(transactions)) {
@@ -25,9 +24,18 @@ app.post("/api/transactions", (req, res) => {
     });
   }
 
+  const normalizedTransactions = transactions.map(
+    normalizeTransaction
+  );
+
+  const validTransactions =
+    normalizedTransactions.filter(
+      isValidTransaction
+    );
+
   return res.json({
-    count: transactions.length,
-    message: "Transactions uploaded",
+    count: validTransactions.length,
+    transactions: validTransactions,
   });
 });
 

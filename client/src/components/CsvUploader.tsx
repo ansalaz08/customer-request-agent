@@ -50,9 +50,9 @@ const handleFileUpload = async (
 
       const transactions = results.data;
 
-      await submitTransaction(transactions);
+      const response = await submitTransaction(transactions);
 
-      onTransactionsLoaded(transactions);
+      onTransactionsLoaded(response.transactions);
     },
 
     error: (error) => {
