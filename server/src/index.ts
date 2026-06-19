@@ -14,6 +14,23 @@ app.post("/api/requirements", (req, res) => {
   });
 });
 
+app.post("/api/transactions", (req, res) => {
+  console.log("BODY", req.body);
+
+  const { transactions } = req.body;
+
+  if (!Array.isArray(transactions)) {
+    return res.status(400).json({
+      message: "Transactions must be an array",
+    });
+  }
+
+  return res.json({
+    count: transactions.length,
+    message: "Transactions uploaded",
+  });
+});
+
 app.listen(3001, () => {
   console.log("Server running on port 3001");
 });

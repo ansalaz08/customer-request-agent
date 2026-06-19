@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import { submitRequirement } from './services/api';
+import { type Transaction } from './types/transaction';
+import CsvUploader from './components/CsvUploader';
+import TransactionTable from './components/TransactionTable';
 
 interface RequirementResponse {
   summary: string;
@@ -9,6 +12,7 @@ interface RequirementResponse {
 function App() {
   const [requirement, setrequirement] = useState("");
   const [response, setResponse] = useState<RequirementResponse | null>(null);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -110,6 +114,14 @@ function App() {
         )}
  
         <p style={styles.hint}>Press Ctrl/Cmd + Enter to submit</p>
+
+        <CsvUploader
+          onTransactionsLoaded={setTransactions}
+        />
+
+        <TransactionTable
+          transactions={transactions}
+        />
       </div>
     </div>
   );
