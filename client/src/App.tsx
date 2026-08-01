@@ -1,42 +1,35 @@
-import { useState } from 'react'
-import { submitRequirement } from './services/api';
-import { type Transaction } from './types/transaction';
-import CsvUploader from './components/CsvUploader';
-import TransactionTable from './components/TransactionTable';
-
-interface RequirementResponse {
-  summary: string;
-  status: string;
-}
+import { useState } from "react";
+import { submitRequirement } from "./services/api";
+import { type Transaction } from "./types/transaction";
+import { type RequirementAnalysis as RequirementAnalysisType } from "./types/requirement";
+import CsvUploader from "./components/CsvUploader";
+import TransactionTable from "./components/TransactionTable";
+import RequirementAnalysis from "./components/RequirementAnalysis";
+import RequirementForm from "./components/RequirementForm";
 
 function App() {
-  const [requirement, setrequirement] = useState("");
-  const [response, setResponse] = useState<RequirementResponse | null>(null);
+  const [analysis, setanaylsis] = useState<RequirementAnalysisType | null>(
+    null,
+  );
+  const [submittedRequirement, setSubmittedRequirement] = useState<string>("");
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async () => {
-  if (!requirement.trim()) return;
+  const handleRequirementSubmit = async (requirement: string) => {
+    try {
+      setLoading(true);
+      setanaylsis(null);
+      setError(null);
 
-  try {
-    setLoading(true);
-    setResponse(null);
-    setError(null);
+      const analysis = await submitRequirement(requirement);
 
-    await submitRequirement(requirement);
-
-    setResponse({summary: "Require manager approval for purchases over $5000", status: "Ready for processing"});
-  } catch {
-    setError("Failed to submit requirement");
-  } finally {
-    setLoading(false);
-  }
-};
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-      handleSubmit();
+      setSubmittedRequirement(requirement);
+      setanaylsis(analysis);
+    } catch {
+      setError("Failed to submit requirement");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -48,80 +41,19 @@ function App() {
           <h1 style={styles.title}>Customer Request</h1>
           <p style={styles.subtitle}>Submit a business requirement below.</p>
         </div>
- 
-        <textarea
-          style={styles.textarea}
-          placeholder="e.g. Require manager approval for purchases over $5000"
-          value={requirement}
-          onChange={(e) => setrequirement(e.target.value)}
-          onKeyDown={handleKeyDown}
-          rows={4}
-          disabled={loading}
-        />
- 
-        <button
-          style={{
-            ...styles.button,
-            ...(loading || !requirement.trim() ? styles.buttonDisabled : {}),
-          }}
-          onClick={handleSubmit}
-          disabled={loading || !requirement.trim()}
-        >
-          {loading ? (
-            <span style={styles.loadingRow}>
-              <span style={styles.dot} />
-              <span style={styles.dot} />
-              <span style={styles.dot} />
-            </span>
-          ) : (
-            "Submit Requirement"
-          )}
-        </button>
- 
-        {(response || error) && (
-          <div style={{ ...styles.panel, ...(error ? styles.panelError : {}) }}>
-            {error ? (
-              <span style={styles.errorText}>{error}</span>
-            ) : (
-              <>
-                <span style={styles.checkmark}>✓</span>
-                <span style={styles.responseText}>{response.summary}</span>
-              </>
-            )}
-          </div>
+
+        <RequirementForm loading={loading} onSubmit={handleRequirementSubmit} />
+
+        {analysis && !error && (
+          <RequirementAnalysis
+            requirement={submittedRequirement}
+            analysis={analysis}
+          />
         )}
 
-        {response && !error && (
-          <div style={styles.configPanel}>
-            <div style={styles.configSection}>
-              <p style={styles.configLabel}>Requirement Submitted</p>
-              <div style={styles.divider} />
-              <p style={styles.configRequirement}>
-                Require manager approval<br />for purchases over $5000
-              </p>
-            </div>
-            <div style={styles.configSection}>
-              <p style={styles.configLabel}>Generated Configuration</p>
-              <div style={styles.divider} />
-              <pre style={styles.configCode}>{`{
-                "approvalThreshold": 5000,
-                "approver": "manager",
-                "escalationHours": 48
-                }`}
-              </pre>
-            </div>
-          </div>
-        )}
- 
-        <p style={styles.hint}>Press Ctrl/Cmd + Enter to submit</p>
+        <CsvUploader onTransactionsLoaded={setTransactions} />
 
-        <CsvUploader
-          onTransactionsLoaded={setTransactions}
-        />
-
-        <TransactionTable
-          transactions={transactions}
-        />
+        <TransactionTable transactions={transactions} />
       </div>
     </div>
   );
@@ -143,7 +75,7 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: "16px",
     padding: "40px",
     width: "100%",
-    maxWidth: "520px",
+    maxWidth: "760px",
     boxShadow: "0 24px 64px rgba(0,0,0,0.4)",
   },
   header: {
@@ -294,4 +226,4 @@ const styles: Record<string, React.CSSProperties> = {
   },
 };
 
-export default App
+export default App;
