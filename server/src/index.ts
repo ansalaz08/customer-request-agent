@@ -3,7 +3,6 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 dotenv.config();
-console.log("process.env.OPENROUTER_API_KEY", process.env.OPENROUTER_API_KEY);
 
 import requirementRoutes from "./routes/requirementRoutes";
 import transactionRoutes from "./routes/transactionRoutes";
