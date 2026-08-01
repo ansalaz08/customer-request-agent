@@ -3,6 +3,6 @@ import { analyzeRequirementController } from "../controllers/requirementControll
 
 const router = Router();
 
-router.post("/requirement", analyzeRequirementController);
+router.post("/requirements", analyzeRequirementController);
 
 export default router;

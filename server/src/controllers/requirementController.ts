@@ -12,6 +12,8 @@ export async function analyzeRequirementController(req: Request, res: Response) 
 
     res.json(analysis);
   } catch (error) {
+    console.error(error);
+
     res.status(500).json({ error: "Failed to anayze Requirement" });
   }
 }
