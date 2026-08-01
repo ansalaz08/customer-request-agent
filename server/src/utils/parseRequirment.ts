@@ -1,20 +1,15 @@
 import { RequirementSchema } from "../schemas/requirement.schema";
 
 export function parseRequirement(content: string) {
+  console.log("Parsing Response...");
   try {
-    const cleaned = content
-      .replace(/^```json\s*/i, "")
-      .replace(/^```\s*/i, "")
-      .replace(/\s*```$/, "")
-      .trim();
-
-      const parsed = JSON.parse(cleaned);
-
-      return RequirementSchema.parse(parsed);
+    const parsed = JSON.parse(content);
+  
+    return RequirementSchema.parse(parsed);
   } catch (error) {
-    console.error("Raw LLM Response:", content);
-    console.error(content);
+    console.error("Failed to parse AI response:");
+    console.error(error);
 
-    throw new Error("Invalid JSON returned from LLM");
+    throw error;
   }
 }

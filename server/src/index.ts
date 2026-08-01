@@ -21,5 +21,3 @@ app.use("/api", requirementRoutes);
 app.listen(3001, () => {
   console.log("Server running on port 3001");
 });
-
-// Require manager approval for purchases over $5000.
